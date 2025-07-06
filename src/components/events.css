@@ -48,6 +48,8 @@
     flex: 1;
     overflow: hidden;
     border-radius: 16px;
+    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+    touch-action: pan-x; /* Improve horizontal touch handling */
 }
 
 .carousel-track {
@@ -55,6 +57,7 @@
     transition: transform 0.4s ease-in-out;
     gap: 1.5rem;
     padding: 0 0.75rem;
+    will-change: transform; /* Optimize for animations */
 }
 
 .event-card {
@@ -571,7 +574,7 @@
         justify-content: center;
         gap: 0;
         margin: 0;
-        padding: 0;
+        padding: 0 20px; /* Add padding to make room for the buttons */
     }
     
     .carousel-wrapper {
@@ -579,22 +582,24 @@
         overflow: hidden;
         max-width: 320px;
         margin: 0 auto;
+        -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
     }
     
     .carousel-btn {
-        width: 40px;
-        height: 40px;
+        width: 44px; /* Slightly larger for better touch target */
+        height: 44px;
         position: absolute;
         z-index: 10;
-        background: rgba(255, 140, 0, 0.15);
+        background: rgba(255, 140, 0, 0.25); /* More visible */
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 12px rgba(255, 140, 0, 0.2);
         border: 2px solid rgba(255, 140, 0, 0.3);
         flex-shrink: 0;
+        touch-action: manipulation; /* Improve touch behavior */
     }
     
     .carousel-btn.prev-btn {
-        left: 10px;
+        left: 5px;
         top: 50%;
         transform: translateY(-50%);
     }
@@ -680,6 +685,7 @@
 @media (max-width: 480px) {
     .events-container {
         padding: 0.75rem 0.25rem;
+        overflow-x: hidden; /* Prevent horizontal scrolling of the whole container */
     }
     
     .events-header {
@@ -689,11 +695,18 @@
     
     .carousel-container {
         gap: 0.5rem;
+        position: relative;
+        z-index: 1;
+        overflow: visible; /* Allow nav buttons to be visible */
+        margin: 0 auto;
+        max-width: calc(100% - 20px);
     }
     
     .carousel-btn {
-        width: 35px;
-        height: 35px;
+        width: 40px; /* Larger touch target */
+        height: 40px;
+        opacity: 0.9; /* Make more visible */
+        -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
     }
     
     .carousel-btn.prev-btn {

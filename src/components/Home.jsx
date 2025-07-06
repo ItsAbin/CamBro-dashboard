@@ -174,11 +174,37 @@ const Home = () => {
     // Tooltip handlers
     const showTooltip = (event, content) => {
         const rect = event.currentTarget.getBoundingClientRect();
+        
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Calculate tooltip dimensions (estimate based on content)
+        const tooltipWidth = 250; // Estimated width
+        const tooltipHeight = 120; // Estimated height
+        
+        // Calculate initial position
+        let x = event.clientX;
+        let y = event.clientY - 10;
+        
+        // Adjust position to ensure tooltip stays in viewport
+        if (x + tooltipWidth > viewportWidth - 20) {
+            x = x - tooltipWidth - 10; // Position to the left of cursor
+        }
+        
+        if (y + tooltipHeight > viewportHeight - 20) {
+            y = y - tooltipHeight - 10; // Position above cursor
+        }
+        
+        // Ensure tooltip doesn't go off the left or top edge
+        x = Math.max(10, x);
+        y = Math.max(10, y);
+        
         setTooltip({
             visible: true,
             content: content,
-            x: event.clientX,
-            y: event.clientY - 10
+            x: x,
+            y: y
         });
     };
 
@@ -788,7 +814,8 @@ const Home = () => {
                     className="chart-tooltip visible"
                     style={{ 
                         left: `${tooltip.x}px`, 
-                        top: `${tooltip.y}px` 
+                        top: `${tooltip.y}px`,
+                        transform: 'translate(0, 0)' /* Prevent any default transforms */
                     }}
                     dangerouslySetInnerHTML={{ __html: tooltip.content }}
                 />

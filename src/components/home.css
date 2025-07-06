@@ -1240,7 +1240,7 @@
 
 /* Hover Tooltips for Charts */
 .chart-tooltip {
-    position: absolute;
+    position: fixed; /* Changed from absolute to fixed for better positioning */
     background: rgba(20, 10, 40, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 140, 0, 0.3);
@@ -1253,6 +1253,8 @@
     opacity: 0;
     transition: opacity 0.2s ease;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    max-width: 250px; /* Ensure consistent width */
+    width: auto; /* Allow flexible width up to max-width */
 }
 
 .chart-tooltip.visible {

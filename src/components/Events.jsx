@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './events.css';
 
 const Events = () => {
@@ -142,11 +142,15 @@ const Events = () => {
         return () => clearInterval(timer);
     }, [nextEvent.date]);
 
-    const nextSlide = () => {
+    const nextSlide = (e) => {
+        e.preventDefault(); // Prevent default to avoid scrolling issues
+        e.stopPropagation(); // Stop event propagation
         setCurrentIndex(prev => Math.min(prev + 1, maxIndex));
     };
 
-    const prevSlide = () => {
+    const prevSlide = (e) => {
+        e.preventDefault(); // Prevent default to avoid scrolling issues
+        e.stopPropagation(); // Stop event propagation
         setCurrentIndex(prev => Math.max(prev - 1, 0));
     };
 
@@ -158,6 +162,31 @@ const Events = () => {
             month: 'long', 
             day: 'numeric' 
         });
+    };
+
+    // Touch events for mobile swiping
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
+    
+    // Handle touch events for swiping
+    const handleTouchStart = (e) => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+    
+    const handleTouchMove = (e) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+    
+    const handleTouchEnd = () => {
+        if (touchStart - touchEnd > 75) {
+            // Swipe left, go next
+            nextSlide({ preventDefault: () => {}, stopPropagation: () => {} });
+        }
+        
+        if (touchStart - touchEnd < -75) {
+            // Swipe right, go prev
+            prevSlide({ preventDefault: () => {}, stopPropagation: () => {} });
+        }
     };
 
     return (
@@ -206,11 +235,17 @@ const Events = () => {
                     className="carousel-btn prev-btn" 
                     onClick={prevSlide}
                     disabled={currentIndex === 0}
+                    aria-label="Previous slide"
                 >
                     <i className="ri-arrow-left-s-line"></i>
                 </button>
 
-                <div className="carousel-wrapper">
+                <div 
+                    className="carousel-wrapper"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
                     <div 
                         className="carousel-track"
                         style={{
@@ -218,11 +253,14 @@ const Events = () => {
                                 ? `translateX(-${currentIndex * cardWidth}px)`
                                 : `translateX(-${currentIndex * (100 / itemsPerView)}%)`
                         }}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                     >
                         {events.map((event) => (
                             <div key={event.id} className="event-card">
                                 <div className="event-image">
-                                    <img src={event.image} alt={event.title} />
+                                    <img src={event.image} alt={event.title} loading="lazy" />
                                     <div className="event-date-overlay">
                                         <span className="event-day">
                                             {new Date(event.date).getDate()}
@@ -256,6 +294,7 @@ const Events = () => {
                     className="carousel-btn next-btn" 
                     onClick={nextSlide}
                     disabled={currentIndex === maxIndex}
+                    aria-label="Next slide"
                 >
                     <i className="ri-arrow-right-s-line"></i>
                 </button>
