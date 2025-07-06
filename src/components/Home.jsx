@@ -25,6 +25,7 @@ import './home.css';
 const AIBot = lazy(() => import('./AIBot/AIBot'));
 const Events = lazy(() => import('./Events'));
 const ComplaintForm = lazy(() => import('./ComplaintForm'));
+const Library = lazy(() => import('./Library/Library'));
 
 // Loading component for lazy-loaded sections
 const SectionLoader = () => (
@@ -85,6 +86,28 @@ const Home = () => {
         } else {
             setLoadingSection('complaints');
             setActiveSection('complaints');
+            
+            // Clear loading state after component loads
+            setTimeout(() => {
+                setLoadingSection(null);
+                const inlineSection = document.querySelector('.inline-section');
+                if (inlineSection) {
+                    inlineSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 300); // Adjust timing based on lazy loading
+        }
+    };
+
+    const handleNavigateToLibrary = () => {
+        if (activeSection === 'library') {
+            setActiveSection(null);
+            setLoadingSection(null);
+        } else {
+            setLoadingSection('library');
+            setActiveSection('library');
             
             // Clear loading state after component loads
             setTimeout(() => {
@@ -497,24 +520,18 @@ const Home = () => {
                                 <span>EVENT SCHEDULE</span>
                             </button>
 
-                            <button className="nav-icon-btn">
+                            <button 
+                                className={`nav-icon-btn ${activeSection === 'library' ? 'active' : ''} ${loadingSection === 'library' ? 'loading' : ''}`} 
+                                onClick={handleNavigateToLibrary}
+                                disabled={loadingSection === 'library'}
+                            >
                                 <div className="nav-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M21 10C21 17 12 23 12 23S3 17 3 10A9 9 0 0 1 21 10Z" stroke="currentColor" strokeWidth="2"/>
-                                        <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
+                                        <path d="M4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                     </svg>
                                 </div>
-                                <span>CAMPUS MAP</span>
-                            </button>
-
-                            <button className="nav-icon-btn">
-                                <div className="nav-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                                        <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2"/>
-                                    </svg>
-                                </div>
-                                <span>EXAM COUNTDOWN</span>
+                                <span>LIBRARY</span>
                             </button>
 
                             <button 
@@ -546,8 +563,16 @@ const Home = () => {
             
             {activeSection === 'complaints' && (
                 <div className="inline-section">
-                    <Suspense fallback={< SectionLoader />}>
+                    <Suspense fallback={<SectionLoader />}>
                         <ComplaintForm />
+                    </Suspense>
+                </div>
+            )}
+            
+            {activeSection === 'library' && (
+                <div className="inline-section">
+                    <Suspense fallback={<SectionLoader />}>
+                        <Library />
                     </Suspense>
                 </div>
             )}
