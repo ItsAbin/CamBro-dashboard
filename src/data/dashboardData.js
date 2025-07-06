@@ -3,10 +3,10 @@
 // Exam schedule data
 export const examData = {
     // Current semester exams
-    'Sem 6': {
+    'Sem 7': {
         startDate: '2025-10-15',
         endDate: '2025-11-05',
-        examTitle: 'Semester 6 Final Exams',
+        examTitle: 'Semester 7 Final Exams',
         subjects: [
             { name: 'Advanced Algorithms', date: '2025-10-15', time: '9:00 AM' },
             { name: 'Web Technologies', date: '2025-10-18', time: '9:00 AM' },
@@ -24,26 +24,7 @@ export const examData = {
         ]
     },
     // Next semester exams (for demo purposes)
-    'Sem 7': {
-        startDate: '2026-03-10',
-        endDate: '2026-04-02',
-        examTitle: 'Semester 7 Final Exams',
-        subjects: [
-            { name: 'Cloud Computing', date: '2026-03-10', time: '9:00 AM' },
-            { name: 'Big Data Analytics', date: '2026-03-14', time: '9:00 AM' },
-            { name: 'Internet of Things', date: '2026-03-18', time: '2:00 PM' },
-            { name: 'Cybersecurity', date: '2026-03-22', time: '9:00 AM' },
-            { name: 'Artificial Intelligence', date: '2026-03-26', time: '2:00 PM' },
-            { name: 'Research Methodology', date: '2026-04-02', time: '10:00 AM' }
-        ],
-        studyTips: [
-            "Create topic-wise notes for each subject",
-            "Use visual aids and mind maps for complex topics",
-            "Schedule regular revision sessions",
-            "Practice with mock tests to improve time management",
-            "Maintain a healthy sleep schedule during exam preparation"
-        ]
-    }
+    
 };
 
 export const attendanceData = {
@@ -57,7 +38,8 @@ export const attendanceData = {
         'Sem 3': { percentage: 95, present: 91, absent: 5, total: 96 },
         'Sem 4': { percentage: 78, present: 75, absent: 21, total: 96 },
         'Sem 5': { percentage: 85, present: 81, absent: 15, total: 96 },
-        'Sem 6': { percentage: 90, present: 86, absent: 10, total: 96 }
+        'Sem 6': { percentage: 90, present: 86, absent: 10, total: 96 },
+        'Sem 7': { percentage: 98, present: 12, absent: 1, total: 13 }
     },
     // Current semester
     currentSemester: 'Sem 6'
@@ -74,7 +56,8 @@ export const performanceData = {
                 'Sem 3': { marks: [82, 89, 78], average: 83.0, gpa: 8.3 },
                 'Sem 4': { marks: [90, 85, 88], average: 87.7, gpa: 8.8 },
                 'Sem 5': { marks: [92, 88, 95], average: 91.7, gpa: 9.2 },
-                'Sem 6': { marks: [89, 94, 87], average: 90.0, gpa: 9.0 }
+                'Sem 6': { marks: [89, 94, 87], average: 90.0, gpa: 9.0 },
+                'Sem 7': { marks: [0, 0, 0], average: 0, gpa: 0.0 }
             }
         },
         'SS': {
@@ -82,48 +65,52 @@ export const performanceData = {
             semesters: {
                 'Sem 1': { marks: [78, 85, 82], average: 81.7, gpa: 8.2 },
                 'Sem 2': { marks: [85, 89, 84], average: 86.0, gpa: 8.6 },
-                'Sem 3': { marks: [88, 92, 85], average: 88.3, gpa: 8.8 },
-                'Sem 4': { marks: [82, 87, 90], average: 86.3, gpa: 8.6 },
-                'Sem 5': { marks: [90, 88, 92], average: 90.0, gpa: 9.0 },
-                'Sem 6': { marks: [92, 89, 94], average: 91.7, gpa: 9.2 }
+                'Sem 3': { marks: [79, 75, 88], average: 80.7, gpa: 8.1 },
+                'Sem 4': { marks: [88, 82, 90], average: 86.7, gpa: 8.7 },
+                'Sem 5': { marks: [85, 90, 82], average: 85.7, gpa: 8.6 },
+                'Sem 6': { marks: [82, 88, 92], average: 87.3, gpa: 8.7 },
+                'Sem 7': { marks: [0, 0, 0], average: 0, gpa: 0.0 }
             }
         },
         'DS': {
             fullName: 'Data Structures',
             semesters: {
-                'Sem 1': { marks: [92, 88, 95], average: 91.7, gpa: 9.2 },
-                'Sem 2': { marks: [89, 94, 87], average: 90.0, gpa: 9.0 },
-                'Sem 3': { marks: [95, 92, 98], average: 95.0, gpa: 9.5 },
-                'Sem 4': { marks: [88, 91, 89], average: 89.3, gpa: 8.9 },
-                'Sem 5': { marks: [94, 89, 96], average: 93.0, gpa: 9.3 },
-                'Sem 6': { marks: [91, 95, 92], average: 92.7, gpa: 9.3 }
+                'Sem 1': { marks: [90, 85, 87], average: 87.3, gpa: 8.7 },
+                'Sem 2': { marks: [92, 88, 90], average: 90.0, gpa: 9.0 },
+                'Sem 3': { marks: [88, 92, 85], average: 88.3, gpa: 8.8 },
+                'Sem 4': { marks: [89, 93, 91], average: 91.0, gpa: 9.1 },
+                'Sem 5': { marks: [95, 92, 90], average: 92.3, gpa: 9.2 },
+                'Sem 6': { marks: [91, 95, 92], average: 92.7, gpa: 9.3 },
+                'Sem 7': { marks: [0, 0, 0], average: 0, gpa: 0.0 }
             }
         },
         'DBMS': {
             fullName: 'Database Management Systems',
             semesters: {
-                'Sem 1': { marks: [88, 92, 85], average: 88.3, gpa: 8.8 },
-                'Sem 2': { marks: [90, 88, 89], average: 89.0, gpa: 8.9 },
-                'Sem 3': { marks: [85, 91, 87], average: 87.7, gpa: 8.8 },
-                'Sem 4': { marks: [92, 89, 94], average: 91.7, gpa: 9.2 },
-                'Sem 5': { marks: [88, 95, 91], average: 91.3, gpa: 9.1 },
-                'Sem 6': { marks: [94, 88, 92], average: 91.3, gpa: 9.1 }
+                'Sem 1': { marks: [82, 78, 85], average: 81.7, gpa: 8.2 },
+                'Sem 2': { marks: [85, 80, 88], average: 84.3, gpa: 8.4 },
+                'Sem 3': { marks: [88, 84, 90], average: 87.3, gpa: 8.7 },
+                'Sem 4': { marks: [90, 86, 92], average: 89.3, gpa: 8.9 },
+                'Sem 5': { marks: [92, 88, 95], average: 91.7, gpa: 9.2 },
+                'Sem 6': { marks: [94, 88, 92], average: 91.3, gpa: 9.1 },
+                'Sem 7': { marks: [0, 0, 0], average: 0, gpa: 0.0 }
             }
         },
         'OS': {
             fullName: 'Operating Systems',
             semesters: {
-                'Sem 1': { marks: [82, 89, 78], average: 83.0, gpa: 8.3 },
-                'Sem 2': { marks: [85, 82, 88], average: 85.0, gpa: 8.5 },
-                'Sem 3': { marks: [89, 85, 91], average: 88.3, gpa: 8.8 },
-                'Sem 4': { marks: [88, 92, 85], average: 88.3, gpa: 8.8 },
-                'Sem 5': { marks: [91, 89, 94], average: 91.3, gpa: 9.1 },
-                'Sem 6': { marks: [89, 93, 87], average: 89.7, gpa: 9.0 }
+                'Sem 1': { marks: [75, 82, 78], average: 78.3, gpa: 7.8 },
+                'Sem 2': { marks: [80, 85, 82], average: 82.3, gpa: 8.2 },
+                'Sem 3': { marks: [82, 88, 84], average: 84.7, gpa: 8.5 },
+                'Sem 4': { marks: [85, 90, 86], average: 87.0, gpa: 8.7 },
+                'Sem 5': { marks: [88, 92, 85], average: 88.3, gpa: 8.8 },
+                'Sem 6': { marks: [89, 93, 87], average: 89.7, gpa: 9.0 },
+                'Sem 7': { marks: [0, 0, 0], average: 0, gpa: 0.0 }
             }
         }
     },
     // Current semester
-    currentSemester: 'Sem 6'
+    currentSemester: 'Sem 7'
 };
 
 export const deadlines = [

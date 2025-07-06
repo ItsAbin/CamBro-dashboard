@@ -31,6 +31,7 @@ const AIBot = lazy(() => import('./AIBot/AIBot'));
 const Events = lazy(() => import('./Events'));
 const ComplaintForm = lazy(() => import('./ComplaintForm'));
 const Library = lazy(() => import('./Library/Library'));
+const ExamCountdown = lazy(() => import('./ExamCountdown'));
 
 // Loading component for lazy-loaded sections
 const SectionLoader = () => (
@@ -46,18 +47,15 @@ const Home = () => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
-    const [selectedSemester, setSelectedSemester] = useState(attendanceData.currentSemester);
-    const [activeSection, setActiveSection] = useState(null); // 'events' or 'complaints'
+    const [selectedSemester, setSelectedSemester] = useState('Sem 6');
+    const [activeSection, setActiveSection] = useState(null); // 'events', 'complaints', 'library', 'exams'
     const [loadingSection, setLoadingSection] = useState(null); // Track which section is loading
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
     const [animatedPercentage, setAnimatedPercentage] = useState(0);
     const [animationStarted, setAnimationStarted] = useState(false);
-    const [showExamCountdown, setShowExamCountdown] = useState(false);
-    const [examCountdown, setExamCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, progress: 0 });
     const chartRef = useRef(null);
     const ringRef = useRef(null);
-    const countdownTimerRef = useRef(null);
 
     // Calculate metrics for selected semester
     const semesterAttendance = getAttendanceForSemester(selectedSemester);
@@ -65,59 +63,32 @@ const Home = () => {
     const semesterGPA = getOverallGPAForSemester(selectedSemester);
     const subjectCodes = getSubjectCodes();
     const examInfo = getExamDataForSemester(selectedSemester);
+    
+    // Get Sem 7 exam data specifically for the countdown, regardless of selected semester
+    const sem7ExamInfo = getExamDataForSemester('Sem 7');
 
     // Exam countdown functionality
     const handleNavigateToExams = () => {
-        if (showExamCountdown) {
-            setShowExamCountdown(false);
-            clearInterval(countdownTimerRef.current);
+        if (activeSection === 'exams') {
+            setActiveSection(null);
+            setLoadingSection(null);
         } else {
-            setShowExamCountdown(true);
-            startExamCountdown();
+            setLoadingSection('exams');
+            setActiveSection('exams');
+            
+            // Clear loading state after component loads
+            setTimeout(() => {
+                setLoadingSection(null);
+                const inlineSection = document.querySelector('.inline-section');
+                if (inlineSection) {
+                    inlineSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 300); // Adjust timing based on lazy loading
         }
-
-        // If we're showing the exam countdown section, we need to scroll to it
-        setTimeout(() => {
-            const examSection = document.querySelector('.exam-countdown-section');
-            if (examSection) {
-                examSection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
-            }
-        }, 100);
     };
-
-    const startExamCountdown = () => {
-        if (!examInfo) return;
-        
-        // Update countdown initially
-        updateExamCountdown();
-        
-        // Clear any existing interval
-        if (countdownTimerRef.current) {
-            clearInterval(countdownTimerRef.current);
-        }
-        
-        // Set up interval to update countdown every second
-        countdownTimerRef.current = setInterval(updateExamCountdown, 1000);
-    };
-
-    const updateExamCountdown = () => {
-        if (!examInfo) return;
-        
-        const countdown = getExamCountdown(examInfo.startDate);
-        setExamCountdown(countdown);
-    };
-
-    // Cleanup countdown timer when component unmounts
-    useEffect(() => {
-        return () => {
-            if (countdownTimerRef.current) {
-                clearInterval(countdownTimerRef.current);
-            }
-        };
-    }, []);
 
     // Toggle profile menu
     const toggleProfileMenu = () => {
@@ -530,57 +501,87 @@ const Home = () => {
                         {/* Performance Chart */}
                         <div className="dashboard-card performance-card">
                             <h3>PERFORMANCE - {selectedSemester}</h3>
-                            <div className="performance-summary">
-                                <div className="gpa-display">
-                                    <span className="gpa-label">Semester GPA </span>
-                                    <span className="gpa-value">{semesterGPA}/10.0</span>
+                            {selectedSemester === 'Sem 7' ? (
+                                <div className="sem-not-evaluated">
+                                    <div className="not-evaluated-icon">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M12 8V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M11.995 16H12.005" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div className="not-evaluated-text">
+                                        <h4>Semester Not Evaluated</h4>
+                                        <p>Performance data for {selectedSemester} is not available yet.</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="bar-chart">
-                                {subjectCodes.map((subjectCode, index) => {
-                                    const subjectData = semesterSubjects[subjectCode];
-                                    if (!subjectData) return null;
-                                    
-                                    const maxValue = 100; // Maximum marks
-                                    const height = (subjectData.semesterData.average / maxValue) * 100;
-                                    
-                                    return (
-                                        <div 
-                                            key={index} 
-                                            className="bar-group"
-                                            onMouseEnter={(e) => handleBarHover(e, subjectCode)}
-                                            onMouseLeave={hideTooltip}
-                                        >
-                                            <div className="bars">
-                                                <div 
-                                                    className="bar performance-bar" 
-                                                    style={{ 
-                                                        height: `${height}%`,
-                                                        background: 'linear-gradient(to top, #ff8c00, #ffa500)',
-                                                        width: '20px',
-                                                        minHeight: '10px'
-                                                    }}
-                                                ></div>
-                                            </div>
-                                            <span className="bar-label">{subjectCode}</span>
+                            ) : (
+                                <>
+                                    <div className="performance-summary">
+                                        <div className="gpa-display">
+                                            <span className="gpa-label">Semester GPA</span>
+                                            <span className="gpa-value">{semesterGPA}/10.0</span>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                            <div className="performance-info">
-                                <p className="semester-info">
-                                    Overall Average: {
-                                        Object.keys(semesterSubjects).length > 0 ? 
-                                        (Object.values(semesterSubjects)
-                                            .reduce((sum, subject) => sum + subject.semesterData.average, 0) / 
-                                        Object.keys(semesterSubjects).length).toFixed(1) + '%'
-                                        : 'N/A'
-                                    }
-                                </p>
-                                <p className="semester-info">
-                                    Subjects: {Object.keys(semesterSubjects).length}
-                                </p>
-                            </div>
+                                        <div className="gpa-insight">
+                                            {semesterGPA >= 9.0 ? 'Excellent' : 
+                                            semesterGPA >= 8.0 ? 'Very Good' : 
+                                            semesterGPA >= 7.0 ? 'Good' : 
+                                            semesterGPA >= 6.0 ? 'Average' : 'Needs Improvement'}
+                                        </div>
+                                    </div>
+                                    <div className="bar-chart">
+                                        {subjectCodes.map((subjectCode, index) => {
+                                            const subjectData = semesterSubjects[subjectCode];
+                                            if (!subjectData) return null;
+                                            
+                                            const maxValue = 100; // Maximum marks
+                                            const height = (subjectData.semesterData.average / maxValue) * 100;
+                                            
+                                            return (
+                                                <div 
+                                                    key={index} 
+                                                    className="bar-group"
+                                                    onMouseEnter={(e) => handleBarHover(e, subjectCode)}
+                                                    onMouseLeave={hideTooltip}
+                                                >
+                                                    <div className="bars">
+                                                        <div 
+                                                            className="bar performance-bar" 
+                                                            style={{ 
+                                                                height: `${height}%`,
+                                                                background: 'linear-gradient(to top, #ff8c00, #ffa500)',
+                                                                width: '20px',
+                                                                minHeight: '10px'
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                    <span className="bar-label">{subjectCode}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="performance-info">
+                                        <p className="semester-info">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M16 8L8 16M8.5 8H8.51M15.5 16H15.51M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                            </svg>
+                                            Overall Average: {
+                                                Object.keys(semesterSubjects).length > 0 ? 
+                                                (Object.values(semesterSubjects)
+                                                    .reduce((sum, subject) => sum + subject.semesterData.average, 0) / 
+                                                Object.keys(semesterSubjects).length).toFixed(1) + '%'
+                                                : 'N/A'
+                                            }
+                                        </p>
+                                        <p className="semester-info">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                            </svg>
+                                            Final Exam: {examInfo?.startDate ? formatDate(examInfo.startDate) : 'TBD'}
+                                        </p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -700,8 +701,9 @@ const Home = () => {
                             </button>
 
                             <button 
-                                className={`nav-icon-btn ${showExamCountdown ? 'active' : ''} exam`} 
+                                className={`nav-icon-btn ${activeSection === 'exams' ? 'active' : ''} ${loadingSection === 'exams' ? 'loading' : ''} exam`} 
                                 onClick={handleNavigateToExams}
+                                disabled={loadingSection === 'exams'}
                             >
                                 <div className="nav-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -741,62 +743,14 @@ const Home = () => {
             )}
             
             {/* Exam Countdown Section */}
-            {showExamCountdown && examInfo && (
-                <div className="exam-countdown-section">
-                    <div className="exam-countdown-header">
-                        <h3>EXAM COUNTDOWN</h3>
-                        <span className="exam-semester">{selectedSemester}</span>
-                    </div>
-                    
-                    <div className="exam-countdown-content">
-                        <div className="exam-info">
-                            <h4>{examInfo.examTitle}</h4>
-                            <div className="exam-date">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2"/>
-                                </svg>
-                                <span>Starts {formatDate(examInfo.startDate)} - Ends {formatDate(examInfo.endDate)}</span>
-                            </div>
-                        </div>
-                        
-                        <div className="exam-countdown-timer">
-                            <div className="exam-countdown-item">
-                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.days)}</span>
-                                <span className="exam-countdown-label">Days</span>
-                            </div>
-                            <div className="exam-countdown-item">
-                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.hours)}</span>
-                                <span className="exam-countdown-label">Hours</span>
-                            </div>
-                            <div className="exam-countdown-item">
-                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.minutes)}</span>
-                                <span className="exam-countdown-label">Minutes</span>
-                            </div>
-                            <div className="exam-countdown-item">
-                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.seconds)}</span>
-                                <span className="exam-countdown-label">Seconds</span>
-                            </div>
-                        </div>
-                        
-                        <div className="exam-progress">
-                            <div 
-                                className="exam-progress-bar" 
-                                style={{ width: `${examCountdown.progress}%` }}
-                            ></div>
-                        </div>
-                        <div className="exam-progress-text">
-                            <span>Semester Start</span>
-                            <span>Exam Day</span>
-                        </div>
-                        
-                        <div className="exam-tips">
-                            <h5>STUDY TIPS</h5>
-                            <p>{examInfo.studyTips[Math.floor(Math.random() * examInfo.studyTips.length)]}</p>
-                        </div>
-                    </div>
+            {activeSection === 'exams' && (
+                <div className="inline-section">
+                    <Suspense fallback={<SectionLoader />}>
+                        <ExamCountdown 
+                            examInfo={sem7ExamInfo} 
+                            selectedSemester={'Sem 7'} 
+                        />
+                    </Suspense>
                 </div>
             )}
             
