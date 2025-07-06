@@ -207,7 +207,7 @@ const Events = () => {
                     onClick={prevSlide}
                     disabled={currentIndex === 0}
                 >
-                    <span>&#8249;</span>
+                    <i className="ri-arrow-left-s-line"></i>
                 </button>
 
                 <div className="carousel-wrapper">
@@ -257,7 +257,7 @@ const Events = () => {
                     onClick={nextSlide}
                     disabled={currentIndex === maxIndex}
                 >
-                    <span>&#8250;</span>
+                    <i className="ri-arrow-right-s-line"></i>
                 </button>
             </div>
         </div>

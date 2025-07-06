@@ -20,6 +20,7 @@ import {
     getPerformanceInsight
 } from '../utils/helpers';
 import './home.css';
+import AIBot from './AIBot/AIBot';
 
 // Lazy load components
 const Events = lazy(() => import('./Events'));
@@ -574,6 +575,9 @@ const Home = () => {
                     dangerouslySetInnerHTML={{ __html: tooltip.content }}
                 />
             )}
+            
+            {/* AI Bot floating button */}
+            <AIBot />
         </div>
     );
 };
