@@ -4,13 +4,15 @@ import {
     performanceData, 
     deadlines, 
     classSchedule,
+    examData,
     getAttendanceForSemester,
     getSubjectsForSemester,
     getOverallGPAForSemester,
     getSemesterOptions,
     getSubjectCodes,
     getSubjectFullName,
-    formatTime
+    formatTime,
+    getExamDataForSemester
 } from '../data/dashboardData';
 import { 
     formatDate, 
@@ -18,7 +20,9 @@ import {
     getPriorityColor,
     getDynamicPriority,
     formatGPA,
-    getPerformanceInsight
+    getPerformanceInsight,
+    getExamCountdown,
+    formatTimeUnit
 } from '../utils/helpers';
 import './home.css';
 
@@ -49,15 +53,73 @@ const Home = () => {
     const [canScrollRight, setCanScrollRight] = useState(true);
     const [animatedPercentage, setAnimatedPercentage] = useState(0);
     const [animationStarted, setAnimationStarted] = useState(false);
+    const [showExamCountdown, setShowExamCountdown] = useState(false);
+    const [examCountdown, setExamCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, progress: 0 });
     const chartRef = useRef(null);
     const ringRef = useRef(null);
+    const countdownTimerRef = useRef(null);
 
     // Calculate metrics for selected semester
     const semesterAttendance = getAttendanceForSemester(selectedSemester);
     const semesterSubjects = getSubjectsForSemester(selectedSemester);
     const semesterGPA = getOverallGPAForSemester(selectedSemester);
     const subjectCodes = getSubjectCodes();
+    const examInfo = getExamDataForSemester(selectedSemester);
 
+    // Exam countdown functionality
+    const handleNavigateToExams = () => {
+        if (showExamCountdown) {
+            setShowExamCountdown(false);
+            clearInterval(countdownTimerRef.current);
+        } else {
+            setShowExamCountdown(true);
+            startExamCountdown();
+        }
+
+        // If we're showing the exam countdown section, we need to scroll to it
+        setTimeout(() => {
+            const examSection = document.querySelector('.exam-countdown-section');
+            if (examSection) {
+                examSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }, 100);
+    };
+
+    const startExamCountdown = () => {
+        if (!examInfo) return;
+        
+        // Update countdown initially
+        updateExamCountdown();
+        
+        // Clear any existing interval
+        if (countdownTimerRef.current) {
+            clearInterval(countdownTimerRef.current);
+        }
+        
+        // Set up interval to update countdown every second
+        countdownTimerRef.current = setInterval(updateExamCountdown, 1000);
+    };
+
+    const updateExamCountdown = () => {
+        if (!examInfo) return;
+        
+        const countdown = getExamCountdown(examInfo.startDate);
+        setExamCountdown(countdown);
+    };
+
+    // Cleanup countdown timer when component unmounts
+    useEffect(() => {
+        return () => {
+            if (countdownTimerRef.current) {
+                clearInterval(countdownTimerRef.current);
+            }
+        };
+    }, []);
+
+    // Toggle profile menu
     const toggleProfileMenu = () => {
         setShowProfileMenu(!showProfileMenu);
     };
@@ -638,6 +700,20 @@ const Home = () => {
                             </button>
 
                             <button 
+                                className={`nav-icon-btn ${showExamCountdown ? 'active' : ''} exam`} 
+                                onClick={handleNavigateToExams}
+                            >
+                                <div className="nav-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                                <span>EXAMS</span>
+                            </button>
+
+                            <button 
                                 className={`nav-icon-btn ${activeSection === 'complaints' ? 'active' : ''} ${loadingSection === 'complaints' ? 'loading' : ''}`} 
                                 onClick={handleNavigateToComplaintForm}
                                 disabled={loadingSection === 'complaints'}
@@ -661,6 +737,66 @@ const Home = () => {
                     <Suspense fallback={<SectionLoader />}>
                         <Events />
                     </Suspense>
+                </div>
+            )}
+            
+            {/* Exam Countdown Section */}
+            {showExamCountdown && examInfo && (
+                <div className="exam-countdown-section">
+                    <div className="exam-countdown-header">
+                        <h3>EXAM COUNTDOWN</h3>
+                        <span className="exam-semester">{selectedSemester}</span>
+                    </div>
+                    
+                    <div className="exam-countdown-content">
+                        <div className="exam-info">
+                            <h4>{examInfo.examTitle}</h4>
+                            <div className="exam-date">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2"/>
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2"/>
+                                </svg>
+                                <span>Starts {formatDate(examInfo.startDate)} - Ends {formatDate(examInfo.endDate)}</span>
+                            </div>
+                        </div>
+                        
+                        <div className="exam-countdown-timer">
+                            <div className="exam-countdown-item">
+                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.days)}</span>
+                                <span className="exam-countdown-label">Days</span>
+                            </div>
+                            <div className="exam-countdown-item">
+                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.hours)}</span>
+                                <span className="exam-countdown-label">Hours</span>
+                            </div>
+                            <div className="exam-countdown-item">
+                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.minutes)}</span>
+                                <span className="exam-countdown-label">Minutes</span>
+                            </div>
+                            <div className="exam-countdown-item">
+                                <span className="exam-countdown-number">{formatTimeUnit(examCountdown.seconds)}</span>
+                                <span className="exam-countdown-label">Seconds</span>
+                            </div>
+                        </div>
+                        
+                        <div className="exam-progress">
+                            <div 
+                                className="exam-progress-bar" 
+                                style={{ width: `${examCountdown.progress}%` }}
+                            ></div>
+                        </div>
+                        <div className="exam-progress-text">
+                            <span>Semester Start</span>
+                            <span>Exam Day</span>
+                        </div>
+                        
+                        <div className="exam-tips">
+                            <h5>STUDY TIPS</h5>
+                            <p>{examInfo.studyTips[Math.floor(Math.random() * examInfo.studyTips.length)]}</p>
+                        </div>
+                    </div>
                 </div>
             )}
             

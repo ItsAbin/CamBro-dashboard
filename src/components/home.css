@@ -893,6 +893,202 @@
     color: #e0e7ff;
 }
 
+/* Exam Countdown Styles */
+.exam-countdown-section {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.exam-countdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.exam-countdown-header h3 {
+    color: #ff8c00;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.exam-semester {
+    background: rgba(255, 140, 0, 0.2);
+    color: #ff8c00;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 140, 0, 0.3);
+}
+
+.exam-countdown-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exam-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.exam-info h4 {
+    color: #e0e7ff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.exam-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #a5b4fc;
+    font-size: 0.9rem;
+}
+
+.exam-countdown-timer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin: 0.75rem 0;
+}
+
+.exam-countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
+    border-radius: 12px;
+    padding: 0.75rem;
+    min-width: 60px;
+    box-shadow: 0 4px 16px rgba(255, 140, 0, 0.25);
+    animation: examCountdownPulse 2s infinite;
+}
+
+.exam-countdown-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.exam-countdown-label {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.exam-progress {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.exam-progress-bar {
+    height: 100%;
+    background: linear-gradient(to right, #ff8c00, #ffa500);
+    border-radius: 4px;
+    transition: width 1s ease-in-out;
+}
+
+.exam-progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #a5b4fc;
+}
+
+.exam-tips {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #ff8c00;
+    padding: 0.75rem 1rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 1rem;
+}
+
+.exam-tips h5 {
+    color: #ff8c00;
+    font-size: 0.8rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.exam-tips p {
+    color: #c7d2fe;
+    font-size: 0.8rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive styles for Exam Countdown */
+@media (max-width: 768px) {
+    .exam-countdown-section {
+        padding: 1.25rem;
+        margin: 1.25rem 0;
+    }
+    
+    .exam-countdown-timer {
+        gap: 0.5rem;
+    }
+    
+    .exam-countdown-item {
+        padding: 0.6rem;
+        min-width: 55px;
+    }
+    
+    .exam-countdown-number {
+        font-size: 1.1rem;
+    }
+    
+    .exam-countdown-label {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .exam-countdown-section {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .exam-countdown-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .exam-countdown-timer {
+        gap: 0.4rem;
+    }
+    
+    .exam-countdown-item {
+        padding: 0.5rem;
+        min-width: 50px;
+    }
+    
+    .exam-countdown-number {
+        font-size: 1rem;
+    }
+}
+
 /* Navigation Section Wrapper */
 .navigation-section {
     position: relative;
@@ -940,6 +1136,12 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes examCountdownPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 140, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0); }
 }
 
 @keyframes heartbeat {
@@ -1187,6 +1389,15 @@
 
 .nav-icon-btn.loading::before {
     animation: shimmer 1.5s infinite;
+}
+
+.nav-icon-btn.exam:hover {
+    background: rgba(255, 140, 0, 0.2);
+    border-color: rgba(255, 140, 0, 0.4);
+}
+
+.nav-icon-btn.exam .nav-icon {
+    background: linear-gradient(135deg, #ff8c00, #ff6b00);
 }
 
 @keyframes shimmer {

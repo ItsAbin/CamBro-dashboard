@@ -1,5 +1,51 @@
 // Dashboard Data - Centralized data management
 
+// Exam schedule data
+export const examData = {
+    // Current semester exams
+    'Sem 6': {
+        startDate: '2025-10-15',
+        endDate: '2025-11-05',
+        examTitle: 'Semester 6 Final Exams',
+        subjects: [
+            { name: 'Advanced Algorithms', date: '2025-10-15', time: '9:00 AM' },
+            { name: 'Web Technologies', date: '2025-10-18', time: '9:00 AM' },
+            { name: 'Machine Learning', date: '2025-10-22', time: '2:00 PM' },
+            { name: 'Computer Graphics', date: '2025-10-25', time: '9:00 AM' },
+            { name: 'Software Engineering', date: '2025-10-29', time: '2:00 PM' },
+            { name: 'Project Defense', date: '2025-11-05', time: '10:00 AM' }
+        ],
+        studyTips: [
+            "Create a detailed study plan for all subjects",
+            "Focus on understanding concepts rather than memorizing",
+            "Practice previous year question papers",
+            "Form study groups for difficult subjects",
+            "Take regular breaks to maintain productivity"
+        ]
+    },
+    // Next semester exams (for demo purposes)
+    'Sem 7': {
+        startDate: '2026-03-10',
+        endDate: '2026-04-02',
+        examTitle: 'Semester 7 Final Exams',
+        subjects: [
+            { name: 'Cloud Computing', date: '2026-03-10', time: '9:00 AM' },
+            { name: 'Big Data Analytics', date: '2026-03-14', time: '9:00 AM' },
+            { name: 'Internet of Things', date: '2026-03-18', time: '2:00 PM' },
+            { name: 'Cybersecurity', date: '2026-03-22', time: '9:00 AM' },
+            { name: 'Artificial Intelligence', date: '2026-03-26', time: '2:00 PM' },
+            { name: 'Research Methodology', date: '2026-04-02', time: '10:00 AM' }
+        ],
+        studyTips: [
+            "Create topic-wise notes for each subject",
+            "Use visual aids and mind maps for complex topics",
+            "Schedule regular revision sessions",
+            "Practice with mock tests to improve time management",
+            "Maintain a healthy sleep schedule during exam preparation"
+        ]
+    }
+};
+
 export const attendanceData = {
     present: 85,
     absent: 15,
@@ -225,4 +271,9 @@ export const getGradeFromGPA = (gpa) => {
     if (gpa >= 6.5) return 'D+';
     if (gpa >= 6.0) return 'D';
     return 'F';
+};
+
+// Get exam data for a specific semester
+export const getExamDataForSemester = (semester) => {
+    return examData[semester] || null;
 };

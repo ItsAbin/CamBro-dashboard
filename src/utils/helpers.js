@@ -9,6 +9,34 @@ export const formatDate = (dateString) => {
     });
 };
 
+export const getExamCountdown = (examDate) => {
+    const now = new Date();
+    const targetDate = new Date(examDate);
+    const totalMilliseconds = targetDate - now;
+    
+    // Return all zero values if the date is in the past
+    if (totalMilliseconds <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0, totalDays: 0, progress: 100 };
+    }
+    
+    // Calculate time units
+    const days = Math.floor(totalMilliseconds / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((totalMilliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((totalMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((totalMilliseconds % (1000 * 60)) / 1000);
+    
+    // Calculate progress percentage (assuming 150 days as full semester duration)
+    const totalDays = days + (hours/24) + (minutes/(24*60)) + (seconds/(24*60*60));
+    const semesterDuration = 150; // roughly 5 months
+    const progress = 100 - Math.min(100, Math.max(0, (totalDays/semesterDuration) * 100));
+    
+    return { days, hours, minutes, seconds, totalDays, progress };
+};
+
+export const formatTimeUnit = (unit) => {
+    return unit < 10 ? `0${unit}` : unit;
+};
+
 export const getDaysUntilDeadline = (dateString) => {
     const deadline = new Date(dateString);
     const today = new Date();
