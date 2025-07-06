@@ -16,6 +16,7 @@ import {
     formatDate, 
     getDaysUntilDeadline, 
     getPriorityColor,
+    getDynamicPriority,
     formatGPA,
     getPerformanceInsight
 } from '../utils/helpers';
@@ -532,12 +533,18 @@ const Home = () => {
                                             <h4>{deadline.title}</h4>
                                             <p>{deadline.subject}</p>
                                             <div className="deadline-meta">
-                                                <span 
-                                                    className="deadline-priority" 
-                                                    style={{ backgroundColor: getPriorityColor(deadline.priority) }}
-                                                >
-                                                    {deadline.priority}
-                                                </span>
+                                                {(() => {
+                                                    const daysLeft = getDaysUntilDeadline(deadline.due);
+                                                    const dynamicPriority = getDynamicPriority(daysLeft);
+                                                    return (
+                                                        <span 
+                                                            className="deadline-priority" 
+                                                            style={{ backgroundColor: getPriorityColor(dynamicPriority) }}
+                                                        >
+                                                            {dynamicPriority}
+                                                        </span>
+                                                    );
+                                                })()}
                                                 <span className="deadline-days">
                                                     {getDaysUntilDeadline(deadline.due)} days left
                                                 </span>

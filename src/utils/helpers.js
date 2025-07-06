@@ -17,6 +17,12 @@ export const getDaysUntilDeadline = (dateString) => {
     return diffDays;
 };
 
+export const getDynamicPriority = (daysLeft) => {
+    if (daysLeft <= 3) return 'high';
+    if (daysLeft <= 7) return 'medium';
+    return 'low';
+};
+
 export const getPriorityColor = (priority) => {
     switch (priority) {
         case 'high': return '#ff4757';
