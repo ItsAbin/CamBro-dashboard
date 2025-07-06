@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import ReactMarkdown from 'react-markdown';
 import './AIChatBot.css';
 
 function AIBot() {
@@ -9,17 +9,42 @@ function AIBot() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [aiInitialized, setAiInitialized] = useState(false);
+  const [ai, setAi] = useState(null);
+  const [aiError, setAiError] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Initialize Gemini AI (the client gets API key from environment variable GEMINI_API_KEY)
-  const ai = new GoogleGenAI({apiKey: import.meta.env.VITE_GEMINI_API_KEY});
+  // Lazy load GenAI when chatbot is first opened
+  const initializeAI = async () => {
+    if (aiInitialized || ai) return;
+    
+    try {
+      // Dynamically import the GenAI module
+      const { GoogleGenAI } = await import('@google/genai');
+      const aiInstance = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+      setAi(aiInstance);
+      setAiInitialized(true);
+      setAiError(null);
+    } catch (error) {
+      console.error('Failed to initialize AI:', error);
+      setAiError('Failed to load AI assistant. Please try again.');
+      setAiInitialized(false);
+    }
+  };
+
+  // Initialize AI when chatbot is opened for the first time
+  useEffect(() => {
+    if (isOpen && !aiInitialized) {
+      initializeAI();
+    }
+  }, [isOpen, aiInitialized]);
 
   // System prompt for education-focused responses
   const systemPrompt = `You are CamBro, an educational assistant for college students. You should only answer questions related to education, academics, campus life, study tips, career guidance, course information, and general student support. 
 
 If someone asks about topics unrelated to education (like entertainment, sports, personal relationships, etc.), politely redirect them back to educational topics.
 
-Keep your responses helpful, friendly, and concise. Have Short responses, no more than 2-3 sentences without markdown.`;
+Keep your responses helpful, friendly, and concise. Have Short responses, no more than 2-3 sentences`;
 
   // Auto-scroll to the latest message
   useEffect(() => {
@@ -29,6 +54,23 @@ Keep your responses helpful, friendly, and concise. Have Short responses, no mor
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
+
+    // Check if AI is initialized
+    if (!ai) {
+      setMessages(prev => [...prev, { 
+        role: 'bot', 
+        text: 'AI assistant is still loading. Please wait a moment and try again.' 
+      }]);
+      return;
+    }
+
+    if (aiError) {
+      setMessages(prev => [...prev, { 
+        role: 'bot', 
+        text: aiError 
+      }]);
+      return;
+    }
 
     const userMessage = { role: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
@@ -96,7 +138,15 @@ Keep your responses helpful, friendly, and concise. Have Short responses, no mor
         <div className="message-list">
           {messages.map((msg, index) => (
             <div key={index} className={`message ${msg.role}`}>
-              <p>{msg.text}</p>
+              {msg.role === 'bot' ? (
+                <div className="markdown-content">
+                  <ReactMarkdown>
+                    {msg.text}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p>{msg.text}</p>
+              )}
             </div>
           ))}
           {isLoading && (
@@ -104,6 +154,11 @@ Keep your responses helpful, friendly, and concise. Have Short responses, no mor
               <span className="loading-dots">
                 <span>.</span><span>.</span><span>.</span>
               </span>
+            </div>
+          )}
+          {!aiInitialized && isOpen && (
+            <div className="message bot">
+              <p>🤖 Loading AI assistant...</p>
             </div>
           )}
           <div ref={messagesEndRef} />

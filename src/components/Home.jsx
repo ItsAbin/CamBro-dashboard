@@ -20,9 +20,9 @@ import {
     getPerformanceInsight
 } from '../utils/helpers';
 import './home.css';
-import AIBot from './AIBot/AIBot';
 
 // Lazy load components
+const AIBot = lazy(() => import('./AIBot/AIBot'));
 const Events = lazy(() => import('./Events'));
 const ComplaintForm = lazy(() => import('./ComplaintForm'));
 
@@ -229,7 +229,7 @@ const Home = () => {
             <nav className="navbar">
                 <div className="navbar-left">                
                     <div className="logo">
-                        <img src="/src/assets/CamBro.svg" alt="CampBro Logo" height="40" />
+                        <img src="/CamBro.svg" alt="CampBro Logo" height="40" />
                     </div>
                 </div>
                 
@@ -576,8 +576,16 @@ const Home = () => {
                 />
             )}
             
-            {/* AI Bot floating button */}
-            <AIBot />
+            {/* AI Bot floating button - Lazy loaded */}
+            <Suspense fallback={
+                <div className="ai-bot-floating">
+                    <div className="ai-bot-button ai-bot-loading">
+                        <div className="loading-spinner"></div>
+                    </div>
+                </div>
+            }>
+                <AIBot />
+            </Suspense>
         </div>
     );
 };

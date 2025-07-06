@@ -285,6 +285,141 @@
     }
 }
 
+/* Loading states */
+.ai-bot-loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Markdown styling for bot messages */
+.markdown-content {
+    line-height: 1.6;
+    margin: 0;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+    color: #ff8c00;
+    margin: 0.8rem 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.markdown-content h1 {
+    font-size: 1.2rem;
+}
+
+.markdown-content h2 {
+    font-size: 1.1rem;
+}
+
+.markdown-content h3 {
+    font-size: 1rem;
+}
+
+.markdown-content p {
+    margin: 0.5rem 0;
+    color: #e0e7ff;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.2rem;
+    color: #e0e7ff;
+}
+
+.markdown-content li {
+    margin: 0.3rem 0;
+}
+
+.markdown-content code {
+    background: rgba(255, 140, 0, 0.2);
+    color: #ff8c00;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.markdown-content pre {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 140, 0, 0.3);
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+}
+
+.markdown-content pre code {
+    background: none;
+    color: #e0e7ff;
+    padding: 0;
+}
+
+.markdown-content blockquote {
+    border-left: 3px solid #ff8c00;
+    margin: 0.5rem 0;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #a5b4fc;
+}
+
+.markdown-content strong {
+    color: #ff8c00;
+    font-weight: 600;
+}
+
+.markdown-content em {
+    color: #ffa500;
+}
+
+.markdown-content a {
+    color: #ff8c00;
+    text-decoration: none;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}
+
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+}
+
+.markdown-content th,
+.markdown-content td {
+    border: 1px solid rgba(255, 140, 0, 0.3);
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.markdown-content th {
+    background: rgba(255, 140, 0, 0.2);
+    color: #ff8c00;
+    font-weight: 600;
+}
+
+.markdown-content td {
+    color: #e0e7ff;
+}
+
 @media (max-width: 480px) {
     .chatbot-container {
         width: calc(100% - 2rem);
