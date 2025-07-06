@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { 
     attendanceData, 
     performanceData, 
@@ -46,6 +46,10 @@ const Home = () => {
     const [loadingSection, setLoadingSection] = useState(null); // Track which section is loading
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
+    const [animatedPercentage, setAnimatedPercentage] = useState(0);
+    const [animationStarted, setAnimationStarted] = useState(false);
+    const chartRef = useRef(null);
+    const ringRef = useRef(null);
 
     // Calculate metrics for selected semester
     const semesterAttendance = getAttendanceForSemester(selectedSemester);
@@ -244,7 +248,98 @@ const Home = () => {
     // Calculate attendance percentage for the donut chart
     const attendancePercentage = semesterAttendance.percentage;
     const circumference = 2 * Math.PI * 45;
+    
+    // Ensure we initialize with the correct percentage if no animation has started
+    useEffect(() => {
+        if (attendancePercentage > 0 && animatedPercentage === 0) {
+            setAnimatedPercentage(Math.round(attendancePercentage));
+        }
+    }, []);
+    
     const strokeDasharray = `${(attendancePercentage / 100) * circumference} ${circumference}`;
+
+    // Effect for handling chart animation on component load
+    useEffect(() => {
+        // Ensure we have a valid percentage before starting the animation
+        if (attendancePercentage > 0) {
+            let animationFrame;
+            let startTimestamp;
+            const duration = 1500; // Animation duration in ms
+            
+            // Only start the animation once when the component mounts
+            if (!animationStarted) {
+                setAnimationStarted(true);
+                
+                const animateChart = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const elapsed = timestamp - startTimestamp;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Animate from 0 to attendancePercentage
+                    setAnimatedPercentage(Math.round(attendancePercentage * progress));
+
+                    if (progress < 1) {
+                        animationFrame = requestAnimationFrame(animateChart);
+                    }
+                };
+                
+                // Start the animation from 0
+                setAnimatedPercentage(0);
+                
+                // Add a small delay to ensure the component is fully mounted
+                setTimeout(() => {
+                    startTimestamp = null;
+                    animationFrame = requestAnimationFrame(animateChart);
+                }, 100);
+            }
+
+            return () => {
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
+            };
+        }
+    }, [attendancePercentage, animationStarted]);
+    
+    // Update the animated percentage when the attendance percentage changes
+    useEffect(() => {
+        // When semester changes, trigger a smooth transition to the new percentage
+        if (animationStarted && attendancePercentage > 0) {
+            let animationFrame;
+            let startTimestamp;
+            const duration = 1000; // Animation duration in ms
+            const startValue = animatedPercentage || 0; // Ensure we have a valid start value
+            
+            const animateTransition = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const elapsed = timestamp - startTimestamp;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Animate from current value to new attendancePercentage
+                const newValue = startValue + (Math.round(attendancePercentage) - startValue) * progress;
+                setAnimatedPercentage(Math.round(newValue));
+
+                if (progress < 1) {
+                    animationFrame = requestAnimationFrame(animateTransition);
+                }
+            };
+            
+            // Small delay to ensure values are updated
+            setTimeout(() => {
+                startTimestamp = null;
+                animationFrame = requestAnimationFrame(animateTransition);
+            }, 50);
+            
+            return () => {
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
+            };
+        } else if (!animationStarted && attendancePercentage > 0) {
+            // If animation hasn't started yet, set to full value
+            setAnimatedPercentage(Math.round(attendancePercentage));
+        }
+    }, [attendancePercentage, animationStarted]);
 
     return (
         <div className="home-page">
@@ -323,7 +418,7 @@ const Home = () => {
                                 </div>
                             </div>
                             
-                            <div className="chart-container">
+                            <div className="chart-container" ref={chartRef}>
                                 <svg className="donut-chart" viewBox="0 0 100 100">
                                     <circle
                                         cx="50"
@@ -334,19 +429,20 @@ const Home = () => {
                                         strokeWidth="10"
                                     />
                                     <circle
+                                        ref={ringRef}
                                         cx="50"
                                         cy="50"
                                         r="45"
                                         fill="none"
                                         stroke="#ff8c00"
                                         strokeWidth="10"
-                                        strokeDasharray={strokeDasharray}
+                                        strokeDasharray={`${(animatedPercentage / 100) * circumference} ${circumference}`}
                                         strokeDashoffset="0"
                                         transform="rotate(-90 50 50)"
                                         className="progress-ring"
                                     />
                                     <text x="50" y="50" textAnchor="middle" dy="0.3em" className="chart-percentage">
-                                        {Math.round(attendancePercentage)}%
+                                        {animationStarted ? animatedPercentage : Math.round(attendancePercentage)}%
                                     </text>
                                 </svg>
                             </div>
