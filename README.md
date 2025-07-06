@@ -1,13 +1,62 @@
-# React + Vite
+# 📊 CamBro Dashboard Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A demo dashboard application designed for campus management. This dashboard provides a visual representation of student performance, semester-wise GPA, attendance tracking, and 
 
-Currently, two official plugins are available:
+Built using **Vite** and **React** for fast development and optimized performance.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# campusBro-dashboard
+- 📈 **Performance Overview**: View semester-wise GPA and academic trends.
+- 🗓️ **Attendance Dashboard**: Track attendance percentage for overall subjects
+- 📊 **Charts & Visualizations**: Clean UI using charts for easy understanding
+- ⚡ Fast bundling and hot-reloading with Vite.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React (via Vite)
+- **Styling**: CSS
+- **Routing**: React Router DOM
+
+---
+
+## 📦 Installation & Local Setup
+
+### Prerequisites
+
+- Node.js (v16 or later recommended)
+- npm
+
+### Clone the repository
+
+```bash
+git clone https://github.com/your-username/campus-dashboard-demo.git
+cd CamBro-dashboard
+```
+
+Install dependencies
+```
+npm install
+```
+
+Start the development server
+```
+npm run dev
+```
+---
+📌 Notes
+
+This is a demo application, suited for prototyping only.
+Currently uses data provided within the website itself and doesn't include backend services (except Google Gemini API).
+Bring your API key for Gemini and store it as VITE_GEMINI_API_KEY in .env file
+    
+---  
+📄 License
+
+This project is for educational/demo purposes. You may modify and use it as needed.
+
+---
+#### Made with ❤️ by Geeks for Vibe Hackathon by IEDC CEC
